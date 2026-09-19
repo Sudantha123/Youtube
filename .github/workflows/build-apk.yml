@@ -58,65 +58,54 @@ jobs:
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
       - name: Build Debug APK
-        id: build_debug
         run: |
-          set -o pipefail
           ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee build-log.txt
-          EXIT_CODE=${PIPESTATUS[0]}
-          echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
-          echo "=== BUILD LOG TAIL (500 lines) ==="
-          tail -n 500 build-log.txt
-          echo "=== ERROR SUMMARY ==="
-          grep -A 10 -B 5 -i "error\|FAILED\|Unresolved\|Could not\|Exception" build-log.txt | tail -n 500 > error-summary.txt || true
-          cat error-summary.txt
-          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
-            echo "APK built successfully"
-            exit 0
-          else
-            echo "APK not found, build failed with exit code $EXIT_CODE"
-            exit $EXIT_CODE
-          fi
+          echo "=== BUILD SUCCESS ==="
+          ls -lh app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Build Release APK
+        run: |
+          ./gradlew assembleRelease --stacktrace --no-daemon 2>&1 | tee -a build-log.txt
+          ls -lh app/build/outputs/apk/release/
 
       - name: Push logs to build-logs branch
         if: always()
         run: |
-          echo "Pushing logs..."
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
-          # Fetch build-logs branch if exists
-          git fetch origin build-logs || echo "build-logs branch not exists yet"
+          git fetch origin build-logs || echo "no build-logs branch"
           git checkout -B build-logs
           mkdir -p logs
           cp $GITHUB_WORKSPACE/build-log.txt logs/latest.txt || echo "no log" > logs/latest.txt
-          cp $GITHUB_WORKSPACE/error-summary.txt logs/error.txt || echo "no error" > logs/error.txt
           echo "Run ${{ github.run_id }} - ${{ github.sha }} - $(date)" > logs/info.txt
           git add logs/
-          git commit -m "Build log for run ${{ github.run_id }} - ${{ github.sha }}" || echo "No changes to commit"
+          git commit -m "Build log for run ${{ github.run_id }}" || true
           git push origin build-logs --force
-
-      - name: Upload build log artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: |
-            build-log.txt
-            error-summary.txt
-          retention-days: 7
-
-      - name: Build Release APK
-        if: success()
-        run: ./gradlew assembleRelease --stacktrace --no-daemon
 
       - name: List APKs
         if: always()
-        run: find app/build -name "*.apk" -type f 2>/dev/null | xargs ls -lh || echo "No APKs"
+        run: |
+          echo "=== APKs ==="
+          find app/build -name "*.apk" -type f | xargs ls -lh || echo "No APKs found"
 
       - name: Upload Debug APK
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: youtube-frontend-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: warn
           retention-days: 30
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-frontend-release-apk
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          retention-days: 30
+
+      - name: Upload Build Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build-log.txt
+          retention-days: 7
