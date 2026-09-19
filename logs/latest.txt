@@ -1,0 +1,156 @@
+
+Welcome to Gradle 8.4!
+
+Here are the highlights of this release:
+ - Compiling and testing with Java 21
+ - Faster Java compilation on Windows
+ - Role focused dependency configurations creation
+
+For more details see https://docs.gradle.org/8.4/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.4/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:processDebugManifestForPackage
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:processDebugResources
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:mergeLibDexDebug
+> Task :app:kspDebugKotlin
+> Task :app:mergeExtDexDebug
+> Task :app:kaptGenerateStubsDebugKotlin
+> Task :app:kaptDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ChannelScreen.kt:113:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ChannelScreen.kt:178:17 'Divider(Modifier = ..., Dp = ..., Color = ...): Unit' is deprecated. Renamed to HorizontalDivider
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/HomeScreen.kt:52:30 Parameter 'e' is never used, could be renamed to _
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/LibraryScreen.kt:53:5 Parameter 'onChannelClick' is never used
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/SearchScreen.kt:121:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ShortsScreen.kt:115:40 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ShortsScreen.kt:173:40 'Comment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Comment
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/SubscriptionsScreen.kt:111:21 'Divider(Modifier = ..., Dp = ..., Color = ...): Unit' is deprecated. Renamed to HorizontalDivider
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:163:5 Parameter 'onChannelClick' is never used
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:172:9 Variable 'context' is never used
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:184:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:321:17 'Divider(Modifier = ..., Dp = ..., Color = ...): Unit' is deprecated. Renamed to HorizontalDivider
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:hiltAggregateDepsDebug
+> Task :app:hiltJavaCompileDebug
+> Task :app:processDebugJavaRes
+> Task :app:transformDebugClassesWithAsm
+> Task :app:mergeDebugJavaResource
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 1m 3s
+40 actionable tasks: 40 executed
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.4/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:buildKotlinToolingMetadata
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:javaPreCompileRelease
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeExtDexRelease
+> Task :app:mergeReleaseResources
+> Task :app:processReleaseResources
+> Task :app:optimizeReleaseResources
+> Task :app:kspReleaseKotlin
+> Task :app:kaptGenerateStubsReleaseKotlin
+> Task :app:kaptReleaseKotlin
+
+> Task :app:compileReleaseKotlin
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ChannelScreen.kt:113:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ChannelScreen.kt:178:17 'Divider(Modifier = ..., Dp = ..., Color = ...): Unit' is deprecated. Renamed to HorizontalDivider
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/HomeScreen.kt:52:30 Parameter 'e' is never used, could be renamed to _
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/LibraryScreen.kt:53:5 Parameter 'onChannelClick' is never used
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/SearchScreen.kt:121:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ShortsScreen.kt:115:40 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/ShortsScreen.kt:173:40 'Comment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Comment
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/SubscriptionsScreen.kt:111:21 'Divider(Modifier = ..., Dp = ..., Color = ...): Unit' is deprecated. Renamed to HorizontalDivider
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:163:5 Parameter 'onChannelClick' is never used
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:172:9 Variable 'context' is never used
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:184:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///home/runner/work/Youtube/Youtube/app/src/main/java/com/youtube/frontend/ui/screens/VideoPlayerScreen.kt:321:17 'Divider(Modifier = ..., Dp = ..., Color = ...): Unit' is deprecated. Renamed to HorizontalDivider
+
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:hiltAggregateDepsRelease
+> Task :app:hiltJavaCompileRelease
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:processReleaseJavaRes
+> Task :app:transformReleaseClassesWithAsm
+> Task :app:mergeReleaseJavaResource
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:mergeDexRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:assembleRelease
+
+BUILD SUCCESSFUL in 1m 46s
+49 actionable tasks: 49 executed
