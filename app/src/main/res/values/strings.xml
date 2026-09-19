@@ -11,4 +11,6 @@
     <string name="live">Live</string>
     <string name="news">News</string>
     <string name="sports">Sports</string>
+    <string name="download_channel_name">Downloads</string>
+    <string name="download_channel_description">Video downloads</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import androidx.media3.exoplayer.scheduler.Scheduler
+import com.youtube.frontend.R
 
 /**
  * Download service for offline videos
@@ -18,8 +19,8 @@ class AppDownloadService : DownloadService(
     1,
     DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
     "download_channel",
-    0,
-    0
+    R.string.download_channel_name,
+    R.drawable.ic_launcher
 ) {
     override fun getDownloadManager(): DownloadManager {
         // TODO: Return actual DownloadManager instance
@@ -40,7 +41,7 @@ class AppDownloadService : DownloadService(
         return DownloadNotificationHelper(this, "download_channel")
             .buildProgressNotification(
                 this,
-                android.R.drawable.stat_sys_download,
+                R.drawable.ic_launcher,
                 null,
                 null,
                 downloads,

@@ -52,6 +52,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/DEPENDENCIES"
         }
     }
 }
@@ -63,6 +64,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
     // Compose BOM
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
@@ -71,17 +73,17 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.animation:animation")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-    // Material You + System UI
+    // Material
     implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.0")
 
-    // Media3 ExoPlayer - YouTube playback
+    // Media3 ExoPlayer - YouTube playback core
     implementation("androidx.media3:media3-exoplayer:1.2.1")
     implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.2.1")
@@ -89,7 +91,7 @@ dependencies {
     implementation("androidx.media3:media3-session:1.2.1")
     implementation("androidx.media3:media3-common:1.2.1")
 
-    // Networking - Innertube API
+    // Networking - Innertube API (InnerTune)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -98,46 +100,27 @@ dependencies {
 
     // Coil - Image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
-    implementation("io.coil-kt:coil:2.5.0")
 
     // Room - Local DB for history, playlists, offline
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // DataStore - Preferences
+    // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-
-    // Paging - for infinite feeds
-    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
-    implementation("androidx.paging:paging-compose:3.2.1")
-
-    // Accompanist - pager for Shorts
-    implementation("com.google.accompanist:accompanist-pager:0.34.0")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
-    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // Shimmer, Lottie
-    implementation("com.valentinilk.shimmer:compose-shimmer:1.0.5")
-    implementation("com.airbnb.android:lottie-compose:6.1.0")
-
     // Hilt DI
     implementation("com.google.dagger:hilt-android:2.48.1")
     kapt("com.google.dagger:hilt-compiler:2.48.1")
-    implementation("androidx.hilt:hilt-work:1.1.0")
 
-    // WorkManager - background downloads
+    // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    // YouTubeExtractor alternative - NewPipeExtractor
-    implementation("com.github.TeamNewPipe:NewPipeExtractor:v0.22.10")
-
-    // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    // System UI controller (for status bar)
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

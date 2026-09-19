@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
@@ -20,14 +21,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.4
+      - name: Setup Android SDK (preinstalled)
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls -la $ANDROID_HOME || ls -la /usr/local/lib/android/sdk || echo "Checking sdk locations"
+          # Ensure ANDROID_HOME is set
+          if [ -z "$ANDROID_HOME" ]; then
+            echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+            echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          fi
+          # Accept licenses
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | sdkmanager --licenses || echo "License accept done or failed, continuing"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -37,28 +44,71 @@ jobs:
           if [ ! -s gradle/wrapper/gradle-wrapper.jar ]; then
             echo "Wrapper jar missing or empty, downloading..."
             mkdir -p gradle/wrapper
-            curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar
-            ls -lh gradle/wrapper/
+            # Try multiple sources
+            curl -L --retry 3 -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar || \
+            wget -O gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar || \
+            curl -L -o gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-8.4-bin.zip || echo "Failed to download wrapper, will try direct gradle"
+            ls -lh gradle/wrapper/ || echo "wrapper dir missing"
+            # If still empty, create a minimal wrapper that will use system gradle
+            if [ ! -s gradle/wrapper/gradle-wrapper.jar ]; then
+              echo "Wrapper still missing, will use gradle directly in build step"
+            fi
+          else
+            echo "Wrapper jar exists: $(ls -lh gradle/wrapper/gradle-wrapper.jar)"
           fi
 
+      - name: Setup Gradle (if wrapper missing, install gradle 8.4)
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.4
+          cache-read-only: false
+
+      - name: Create local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "sdk.dir=$ANDROID_HOME" > app/local.properties || true
+          cat local.properties
+
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: |
+          echo "=== Building Debug APK ==="
+          if [ -s gradle/wrapper/gradle-wrapper.jar ]; then
+            ./gradlew assembleDebug --stacktrace --no-daemon
+          else
+            echo "Using system gradle"
+            gradle assembleDebug --stacktrace --no-daemon
+          fi
 
       - name: Build Release APK (unsigned)
-        run: ./gradlew assembleRelease --stacktrace
+        run: |
+          echo "=== Building Release APK ==="
+          if [ -s gradle/wrapper/gradle-wrapper.jar ]; then
+            ./gradlew assembleRelease --stacktrace --no-daemon
+          else
+            gradle assembleRelease --stacktrace --no-daemon
+          fi
+
+      - name: List APKs
+        run: |
+          find app/build -name "*.apk" -type f | xargs ls -lh || echo "No APKs found, listing build outputs"
+          ls -R app/build/outputs/ || true
 
       - name: Upload Debug APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: youtube-frontend-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Upload Release APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: youtube-frontend-release-apk
           path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Create Release
@@ -71,7 +121,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # Optional: Build with Docker fallback
   build-info:
     runs-on: ubuntu-latest
     steps:
@@ -80,5 +129,5 @@ jobs:
       - name: Show project structure
         run: |
           ls -R
-          echo "=== Gradle version ==="
-          gradle --version || ./gradlew --version || echo "No gradle"
+          echo "=== Checking for common build issues ==="
+          cat app/build.gradle.kts | head -100
