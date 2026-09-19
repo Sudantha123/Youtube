@@ -24,13 +24,10 @@ class AppDownloadService : DownloadService(
 ) {
     override fun getDownloadManager(): DownloadManager {
         // TODO: Return actual DownloadManager instance
-        // For scaffold, throw to avoid crash in debug builds
-        // In production, implement:
-        // return DownloadManagerSingleton.getInstance(this)
         throw UnsupportedOperationException("DownloadManager not implemented yet - scaffold")
     }
 
-    override fun getPlatformScheduler(): Scheduler? {
+    override fun getScheduler(): Scheduler? {
         return PlatformScheduler(this, 1)
     }
 
