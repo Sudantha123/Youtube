@@ -60,9 +60,26 @@ jobs:
           set -o pipefail
           ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee build-log.txt
           echo "EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
-          # Also save error summary
-          grep -A 10 -B 5 -i "error\|FAILED\|Unresolved\|Could not" build-log.txt | tail -n 300 > error-summary.txt || true
+          # Save error summary
+          grep -A 10 -B 5 -i "error\|FAILED\|Unresolved\|Could not" build-log.txt | tail -n 500 > error-summary.txt || true
+          echo "=== ERROR SUMMARY ==="
           cat error-summary.txt
+
+      - name: Push build log to branch
+        if: always()
+        run: |
+          echo "Pushing build log to build-logs branch..."
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git checkout --orphan build-logs-temp
+          git rm -rf . || true
+          mkdir -p logs
+          cp $GITHUB_WORKSPACE/build-log.txt logs/latest.txt || echo "no log" > logs/latest.txt
+          cp $GITHUB_WORKSPACE/error-summary.txt logs/error.txt || echo "no error" > logs/error.txt
+          echo "Run ${{ github.run_id }} - ${{ github.sha }}" > logs/info.txt
+          git add logs/
+          git commit -m "Build log for run ${{ github.run_id }}"
+          git push origin HEAD:build-logs --force
 
       - name: Upload build log artifact
         if: always()
@@ -73,41 +90,6 @@ jobs:
             build-log.txt
             error-summary.txt
           retention-days: 7
-
-      - name: Create Gist with build log on failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            let log = '';
-            try {
-              log = fs.readFileSync('build-log.txt', 'utf8');
-            } catch (e) {
-              log = 'Could not read log: ' + e.message;
-            }
-            if (log.length > 90000) {
-              log = log.slice(-90000);
-            }
-            // Create gist
-            const gist = await github.rest.gists.create({
-              public: true,
-              files: {
-                'build-log.txt': {
-                  content: log
-                }
-              },
-              description: `Build failed log for run ${{ github.run_id }} - ${{ github.sha }}`
-            });
-            console.log(`Gist created: ${gist.data.html_url}`);
-            // Also create issue with gist link
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Build failed - Run ${{ github.run_id }} - Gist: ${gist.data.html_url}`,
-              body: `Build failed. Gist with full log: ${gist.data.html_url}\n\nError summary:\n\`\`\`\n${log.split('\n').filter(l => /error|FAILED|Unresolved|Could not/i.test(l)).slice(-50).join('\n')}\n\`\`\``
-            });
 
       - name: Build Release APK
         if: success()
