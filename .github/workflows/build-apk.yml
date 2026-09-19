@@ -26,19 +26,13 @@ jobs:
       - name: Setup Android SDK (preinstalled)
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          ls -la $ANDROID_HOME || ls -la /usr/local/lib/android/sdk || echo "Checking sdk locations"
           if [ -z "$ANDROID_HOME" ]; then
             echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-            echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-            echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_OUTPUT
           fi
-          # Accept licenses
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | sdkmanager --licenses || echo "License accept done"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || echo "License accept done"
 
       - name: Install Android SDK packages
         run: |
-          echo "Installing required SDK packages..."
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools" || echo "SDK install attempted"
 
       - name: Grant execute permission for gradlew
@@ -47,45 +41,37 @@ jobs:
       - name: Fix gradle wrapper jar if missing
         run: |
           if [ ! -s gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "Wrapper jar missing or empty, downloading..."
             mkdir -p gradle/wrapper
             curl -L --retry 3 -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar
-            ls -lh gradle/wrapper/ || echo "wrapper dir missing"
-          else
-            echo "Wrapper jar exists: $(ls -lh gradle/wrapper/gradle-wrapper.jar)"
           fi
+          ls -lh gradle/wrapper/
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.4
-          cache-read-only: false
 
       - name: Create local.properties
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
           cat local.properties
 
-      - name: Build Debug APK with log capture
+      - name: Build Debug APK
+        id: build_debug
         run: |
-          echo "=== Building Debug APK ==="
           set -o pipefail
-          if [ -s gradle/wrapper/gradle-wrapper.jar ]; then
-            ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee build-log.txt || (echo "Build failed, saving log" && cat build-log.txt && exit 1)
-          else
-            gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee build-log.txt || (echo "Build failed, saving log" && cat build-log.txt && exit 1)
-          fi
-        continue-on-error: true
+          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee build-log.txt
+          echo "EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
 
-      - name: Show build log tail
-        if: always()
+      - name: Show build log tail on failure
+        if: failure() || env.EXIT_CODE != '0'
         run: |
-          echo "=== BUILD LOG TAIL ==="
-          tail -n 200 build-log.txt || echo "No log"
-          echo "=== SEARCHING FOR ERRORS ==="
-          grep -i "error\|failed\|exception" build-log.txt | tail -n 100 || echo "No errors found in grep"
+          echo "=== BUILD FAILED - LOG TAIL ==="
+          tail -n 500 build-log.txt
+          echo "=== ERRORS ==="
+          grep -A 5 -B 5 -i "error\|FAILED\|Unresolved reference\|Could not" build-log.txt | tail -n 500
 
-      - name: Upload build log
+      - name: Upload build log artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -93,21 +79,61 @@ jobs:
           path: build-log.txt
           retention-days: 7
 
-      - name: Build Release APK (only if debug succeeded)
+      - name: Create issue with build log on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try {
+              log = fs.readFileSync('build-log.txt', 'utf8');
+            } catch (e) {
+              log = 'Could not read build-log.txt: ' + e.message;
+            }
+            // Truncate to last 60000 chars for issue body limit
+            if (log.length > 60000) {
+              log = log.slice(-60000);
+            }
+            // Extract errors
+            const errorLines = log.split('\n').filter(line => 
+              /error|FAILED|Unresolved|Could not|Exception/i.test(line)
+            ).slice(-100).join('\n');
+            
+            const body = `## Build Failed - Log Summary
+            
+            **Run:** ${{ github.run_id }}
+            **Branch:** ${{ github.ref }}
+            **Commit:** ${{ github.sha }}
+            
+            ### Error Lines (last 100):
+            \`\`\`
+            ${errorLines}
+            \`\`\`
+            
+            ### Full Log Tail (last 500 lines):
+            \`\`\`
+            ${log.split('\n').slice(-500).join('\n')}
+            \`\`\`
+            `;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Build failed - Run ${{ github.run_id }}`,
+              body: body,
+              labels: ['build-failure']
+            });
+
+      - name: Build Release APK
         if: success()
         run: |
-          echo "=== Building Release APK ==="
-          if [ -s gradle/wrapper/gradle-wrapper.jar ]; then
-            ./gradlew assembleRelease --stacktrace --no-daemon
-          else
-            gradle assembleRelease --stacktrace --no-daemon
-          fi
+          ./gradlew assembleRelease --stacktrace --no-daemon
 
       - name: List APKs
         if: always()
         run: |
-          find app/build -name "*.apk" -type f 2>/dev/null | xargs ls -lh || echo "No APKs found"
-          ls -R app/build/outputs/ 2>/dev/null || true
+          find app/build -name "*.apk" -type f 2>/dev/null | xargs ls -lh || echo "No APKs"
 
       - name: Upload Debug APK
         if: always()
@@ -118,20 +144,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Upload Release APK
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: youtube-frontend-release-apk
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
-          if-no-files-found: warn
-          retention-days: 30
-
   build-info:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Show project structure
-        run: |
-          ls -R | head -100
+        run: ls -R | head -50
