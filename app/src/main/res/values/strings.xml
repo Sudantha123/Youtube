@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Advanced Video Player</string>
+    <string name="open_local">Open Local Video</string>
+    <string name="play_stream">Play Stream</string>
+    <string name="enter_url_hint">Enter MP4/HLS/DASH URL</string>
+    <string name="speed">Speed</string>
+    <string name="pip_mode">PiP</string>
+    <string name="aspect_ratio">Aspect</string>
+</resources>

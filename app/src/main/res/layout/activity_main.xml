@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:keepScreenOn="true">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:resize_mode="fit"
+        app:show_buffering="when_playing"
+        app:use_controller="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Top Action Bar Overlay for Quick Controls -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#80000000"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnPickVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Choose File"
+            android:textSize="12sp"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/btnStreamUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Play URL"
+            android:textSize="12sp"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/btnSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="1.0x"
+            android:textSize="12sp"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/btnResize"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Fit"
+            android:textSize="12sp"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/btnPip"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="PiP"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loadingSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
