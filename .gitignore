@@ -1,0 +1,33 @@
+# Gradle
+.gradle/
+build/
+app/build/
+**/build/
+
+# Local
+local.properties
+*.iml
+.idea/
+*.hprof
+
+# APK
+*.apk
+*.aab
+
+# Keystore
+*.jks
+*.keystore
+
+# Android
+captures/
+.externalNativeBuild/
+.cxx/
+*.ap_
+proguard/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if any web wrapper)
+node_modules/
